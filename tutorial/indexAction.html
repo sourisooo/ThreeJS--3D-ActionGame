@@ -244,80 +244,6 @@ function checkcollision(event)
 
 			{
 
-
-
-				event.preventDefault();
-
-			
-
-
-				var loader2 = new GLTFLoader();
-				loader2.load( '../Assets/Rabbit/timeframe_explosion.glb', function ( gltf2 )
-				{
-
-					fxtarget=gltf2.scene;
-					fxtarget.name="fxtarget";
-					fxpool.push(fxtarget);
-
-					// console.log(fxtarget.uuid);
-
-         	   let Anim_IDLE = gltf2.animations[0]; 
-
-            let PlayerMixer = new THREE.AnimationMixer(fxtarget);
-
-             PlayerMixer.clipAction(Anim_IDLE).play();
-              mixers.push(PlayerMixer);
-
-
-
-
-				objectList.filter(o => {o.position==carrot.position;o.position==carrot.position;console.log(o.position==carrot.position,o.name,o.boundingBox.min.x)}).forEach(
-
-
-				e =>
-
-
-						{
-
-							console.log(carrot.position,e.position)
-
-							fx.position.x = e.position.x ;
-          					fx.position.y = e.position.y ;
-          					fx.position.z = e.position.z ;
-
-		  					fx.scale.set(100,100,100);
-
-							  fxtarget.position.x = e.position.x ;
-          					fxtarget.position.y = e.position.y ;
-          					fxtarget.position.z = e.position.z ;	
-
-		  					fxtarget.scale.set(20,20,20);
-
-							// console.log(fxtarget.animations,gltf2.animations[0]);
-							// console.log(Object.getOwnPropertyNames(gltf2),Object.values(gltf2));
-							
-
-           					scene.add(fx);
-		  					 objectList.push(fx);
-							   game.input.keys.splice(game.input.keys.indexOf("click"),1);
-					
-
-								
-					
-							if(e.object.parent.parent.parent.parent.parent.name=="target"){ scene.remove(e.object.parent.parent.parent.parent.parent);scene.remove(fx);fxpool.filter(e => e!=fxtarget).forEach(f => scene.remove(f));scene.add(fxtarget);targettrigger=true;scoretrigger=true;game.input.keys.splice(game.input.keys.indexOf("click"),1)}
-						
-							// console.log(Object.getOwnPropertyNames(e),Object.values(e));
-							
-							// console.log(scene);
-							// console.log(Object.getOwnPropertyNames(e.object.parent.parent.parent.parent.parent),Object.values(e.object.parent.parent.parent.parent.parent));
-							
-							
-						}
-
-
-
-				)})
-
 				
 
 
@@ -488,10 +414,6 @@ update(deltaTime){
 	
 				{
 
-	// 	if(game.input.keys.includes("z")){carrot.position.z=carrot.position.z+1*this.speedX,camera.position.set(carrot.position.x-2,carrot.position.y+2,carrot.position.z-2)};
-	// if(game.input.keys.includes("q")){carrot.position.x=carrot.position.x+1*this.speedX,camera.position.set(carrot.position.x-2,carrot.position.y+2,carrot.position.z-2)};
-	// if(game.input.keys.includes("s")){carrot.position.z=carrot.position.z-1*this.speedX,camera.position.set(carrot.position.x-2,carrot.position.y+2,carrot.position.z-2)};
-	// if(game.input.keys.includes("d")){carrot.position.x=carrot.position.x-1*this.speedX,camera.position.set(carrot.position.x-2,carrot.position.y+2,carrot.position.z-2)};
 
 	offset.x = 500 ;
  	 offset.z = 500 ;
@@ -519,15 +441,6 @@ update(deltaTime){
 
 
 					}
-
-			// 		if(this.timer>this.interval){this.frameX++}
-            // else {this.timer+=deltaTime};
-
-            // if(this.frameX>this.maxFrame) 
-			
-			// 		{
-		
-
 	
 					mixersplayer.forEach( e =>
 				{
@@ -536,10 +449,7 @@ update(deltaTime){
 								// console.log(Object.getOwnPropertyNames(e),Object.values(e))
 				})
 
-				// this.frameX=0;
-				// this.timer=0;
 
-				// 	}
 
 			}
 
