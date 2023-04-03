@@ -1,0 +1,1238 @@
+<head>
+
+	<script src="../js/stats.min.js"></script>
+	<meta  name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' />
+	<style>
+
+		* {
+
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Helvetica', cursive;
+
+}
+
+
+
+canvas {
+
+/* background: blue; */
+/* transform: translate(-50%,-50%);
+top: 50%;
+
+width: 100%;
+text-align: center;
+font-size: 80px; */
+top: 0;
+left:0;
+background-color: rgba(223, 223, 223, 0.473);
+
+
+}
+
+img {
+
+
+  display: none;
+
+}
+
+	</style>
+
+	<script  type="module">
+		/*
+		* 	##################
+		*
+		*	 	THREE JS IMPORTS
+		*		- Main Threejs Lib
+		*		- MTL loader (used with .obj + .mtl 3D models - We are using it for non-animated 3D models)
+		*		- OBJ loader (used with .obj + .mtl 3D models - We are using it for non-animated 3D models)
+		*		- Basic Camera controls
+		*		- Sky shaders
+		*		- GLB loader (used with .glb models - We are using it for animated 3D models )
+		*
+		*	##################
+		*/
+
+
+		import * as THREE from '../js/build/three.module.js';
+		import { OrbitControls,MapControls } from '../js/examples/jsm/controls/OrbitControls.js';
+		import { Sky } from '../js/examples/jsm/objects/Sky.js';
+		import { GLTFLoader } from '../js/examples/jsm/loaders/GLTFLoader.js';
+
+		import * as SkeletonUtils from '../js/examples/jsm/utils/SkeletonUtils.js';
+
+
+		window.addEventListener('load',function() {
+
+		const loading = this.document.getElementById('loading');
+		const canvas = document.getElementById('canvas1');
+		const ctx = canvas.getContext('2d');
+		canvas.width= window.innerWidth;
+		canvas.height =window.innerHeight/10;
+
+
+
+		/*
+		* 	--------------------------------------------------------------------------------
+		*
+		*	-------------------------------- GLOBAL VARIABLES --------------------------------
+		*
+		*	--------------------------------------------------------------------------------
+		*/
+
+		// Basic Threejs variables
+		var scene;
+		var camera;
+		var renderer;
+		var clock;
+
+		// Boolean - True if every 3D object is loaded and ready to use
+		var is_Loaded 			= false;
+
+		// Game objs
+		var plant_cube 			= undefined; 		// ThreeJS Mesh	- CUBE WITH PLANTS
+		var tree_cube 			= undefined; 		// ThreeJS Mesh	- CUBE WITH A TREE
+		var basic_cube 			= undefined; 		// ThreeJS Mesh	- SIMPLE CUBE
+
+		var fence_cube			= undefined;		// ThreeJS Mesh
+		var fence_seamless_cube = undefined; 		// ThreeJS Mesh
+		var fence_angle_cube 	= undefined; 		// ThreeJS Mesh
+
+		var rabbit;
+		var carrot;
+
+    	let mixers=[];
+		let mixersplayer=[];
+		let sw=[];
+		let sword;
+		let brick;
+		let mont;
+		let fx;
+		let build;
+		let ballon;
+		let ballons=[];
+		let scoretrigger=false;
+		let targettrigger=false;
+		let park;
+		let fxtarget;
+		let fxpool=[];
+		let c=0;
+		let s=0;
+		let PlayerMixer2;
+		let att1;
+           let att2 ;
+		   let att3 ;
+		   let att4;
+		   let att5 ;
+		   let att6 ;
+		   let att7 ;
+		   let run;
+
+
+		
+
+		// Performance stats
+		var stats;
+
+		//SKY - variables used with Sky Shader
+		var sky, sun;
+
+		var raycaster = new THREE.Raycaster();
+		var pointer = new THREE.Vector2();
+		 var pov = new THREE.Raycaster();
+    	  var objectList = new Array();
+		  const offset = new THREE.Vector3();
+		  let goal = new THREE.Object3D;
+		  var temp = new THREE.Vector3;
+		  goal.position.set(0, 2, -4);
+
+		/*
+		* 	##################
+		*
+		*	 	FUNCTION LoadPlayer_and_NPC()
+		*		This function is used to load player Girl.glb 3D model into a Threejs mesh - stored in a global variable.
+		*		Called in init() function
+		*
+		*		This 3D object is a .glb file - animated model
+		*		The animations were exported from Blender directly into the model, so we can load the animations too.
+		*
+		*	##################
+		*/
+
+		class InputHandler {
+
+		constructor(game){
+
+		this.game=game;
+		this.keys = [];
+ 
+
+
+	window.addEventListener('keydown', (e) =>
+	
+		{
+
+			if(
+ 
+			
+		 (this.keys.indexOf(e.key) === -1) )
+			
+		 
+		 {this.keys.push(e.key);}
+				
+
+
+	  
+
+		});
+
+
+
+
+		window.addEventListener('click', (e) =>
+	
+		{
+
+				// console.log(e.type)
+
+
+			if(
+ 
+			
+		 (this.keys.indexOf(e.type) === -1) )
+			
+		 
+		 {this.keys.push(e.type);}
+				
+
+
+	  
+
+		});
+
+
+			
+	
+
+		window.addEventListener('keyup', (e) =>
+	
+		{
+
+			if(this.keys.indexOf(e.key)>-1) 
+			
+			{
+
+				this.keys.splice(this.keys.indexOf(e.key),1);
+		
+
+			}
+
+
+
+		});
+
+
+	// console.log(this.keys);
+
+
+			}}
+
+
+function checkcollision(event)
+
+			{
+
+
+
+				event.preventDefault();
+
+			
+
+
+				var loader2 = new GLTFLoader();
+				loader2.load( '../Assets/Rabbit/timeframe_explosion.glb', function ( gltf2 )
+				{
+
+					fxtarget=gltf2.scene;
+					fxtarget.name="fxtarget";
+					fxpool.push(fxtarget);
+
+					// console.log(fxtarget.uuid);
+
+         	   let Anim_IDLE = gltf2.animations[0]; 
+
+            let PlayerMixer = new THREE.AnimationMixer(fxtarget);
+
+             PlayerMixer.clipAction(Anim_IDLE).play();
+              mixers.push(PlayerMixer);
+
+
+
+
+				objectList.filter(o => {o.position==carrot.position;o.position==carrot.position;console.log(o.position==carrot.position,o.name,o.boundingBox.min.x)}).forEach(
+
+
+				e =>
+
+
+						{
+
+							console.log(carrot.position,e.position)
+
+							fx.position.x = e.position.x ;
+          					fx.position.y = e.position.y ;
+          					fx.position.z = e.position.z ;
+
+		  					fx.scale.set(100,100,100);
+
+							  fxtarget.position.x = e.position.x ;
+          					fxtarget.position.y = e.position.y ;
+          					fxtarget.position.z = e.position.z ;	
+
+		  					fxtarget.scale.set(20,20,20);
+
+							// console.log(fxtarget.animations,gltf2.animations[0]);
+							// console.log(Object.getOwnPropertyNames(gltf2),Object.values(gltf2));
+							
+
+           					scene.add(fx);
+		  					 objectList.push(fx);
+							   game.input.keys.splice(game.input.keys.indexOf("click"),1);
+					
+
+								
+					
+							if(e.object.parent.parent.parent.parent.parent.name=="target"){ scene.remove(e.object.parent.parent.parent.parent.parent);scene.remove(fx);fxpool.filter(e => e!=fxtarget).forEach(f => scene.remove(f));scene.add(fxtarget);targettrigger=true;scoretrigger=true;game.input.keys.splice(game.input.keys.indexOf("click"),1)}
+						
+							// console.log(Object.getOwnPropertyNames(e),Object.values(e));
+							
+							// console.log(scene);
+							// console.log(Object.getOwnPropertyNames(e.object.parent.parent.parent.parent.parent),Object.values(e.object.parent.parent.parent.parent.parent));
+							
+							
+						}
+
+
+
+				)})
+
+				
+
+
+
+
+			}
+
+
+
+function mouseMove2(event)
+      {		
+		
+		
+		
+          event.preventDefault();
+
+		  pointer.x = (event.clientX / window.innerWidth) *2 -1;
+          pointer.y = - (event.clientY / window.innerHeight) *2 +1;
+
+			// console.log(event)
+
+          // RAYCASTER
+
+          pov.setFromCamera(pointer, camera);
+
+
+
+		//   carrot.lookAt(camera);
+       
+
+
+			// console.log(Object.getOwnPropertyNames(raycaster),Object.values(raycaster));
+			// console.log((raycaster.ray.direction.x,raycaster.ray.direction.y,raycaster.ray.direction.z));
+
+
+      }
+
+
+	  	function mouseMove(event)
+      {		
+			
+          event.preventDefault();
+
+		  pointer.x = (event.clientX / window.innerWidth) *2 -1;
+          pointer.y = - (event.clientY / window.innerHeight) *2 +1;
+
+	
+
+          // RAYCASTER
+
+          raycaster.setFromCamera(pointer, camera);
+
+		//   raycaster.far=500;
+
+          var intersects = raycaster.intersectObjects(objectList);
+
+
+			// console.log(Object.getOwnPropertyNames(raycaster),Object.values(raycaster));
+			// console.log((raycaster.ray.direction.x,raycaster.ray.direction.y,raycaster.ray.direction.z));
+
+
+          if(intersects.length > 0)
+          {
+     
+
+			  var loader = new GLTFLoader();
+				loader.load( '../Assets/Rabbit/beach_ball.glb', function ( gltf )
+				{
+
+          fx = gltf.scene;
+
+
+		  var loader2 = new GLTFLoader();
+				loader2.load( '../Assets/Rabbit/timeframe_explosion.glb', function ( gltf2 )
+				{
+
+					fxtarget=gltf2.scene;
+					fxtarget.name="fxtarget";
+					fxpool.push(fxtarget);
+
+					// console.log(fxtarget.uuid);
+
+         	   let Anim_IDLE = gltf2.animations[0]; 
+
+            let PlayerMixer = new THREE.AnimationMixer(fxtarget);
+
+             PlayerMixer.clipAction(Anim_IDLE).play();
+              mixers.push(PlayerMixer);
+
+
+
+		  intersects.forEach( e =>
+
+
+						{
+
+					
+
+							fx.position.x = e.point.x ;
+          					fx.position.y = e.point.y ;
+          					fx.position.z = e.point.z ;
+
+		  					fx.scale.set(100,100,100);
+
+							  fxtarget.position.x = e.point.x ;
+          					fxtarget.position.y = e.point.y ;
+          					fxtarget.position.z = e.point.z ;	
+
+		  					fxtarget.scale.set(500,500,500);
+
+							// console.log(fxtarget.animations,gltf2.animations[0]);
+							// console.log(Object.getOwnPropertyNames(gltf2),Object.values(gltf2));
+							
+
+           					scene.add(fx);
+		  					 objectList.push(fx);
+							   game.input.keys.splice(game.input.keys.indexOf("click"),1);
+
+								
+					
+							if(e.object.parent.parent.parent.parent.parent.name=="target"){ scene.remove(e.object.parent.parent.parent.parent.parent);scene.remove(fx);fxpool.filter(e => e!=fxtarget).forEach(f => scene.remove(f));scene.add(fxtarget);targettrigger=true;scoretrigger=true;game.input.keys.splice(game.input.keys.indexOf("click"),1)}
+						
+							// console.log(Object.getOwnPropertyNames(e),Object.values(e));
+							
+							// console.log(scene);
+							// console.log(Object.getOwnPropertyNames(e.object.parent.parent.parent.parent.parent),Object.values(e.object.parent.parent.parent.parent.parent));
+							
+							
+						}
+
+
+		  )
+    
+		//    console.log(intersects);
+					
+				});
+
+			});
+          }
+          else {}
+      }
+
+
+
+class Player{
+
+constructor(game){
+
+	this.game=game;
+	this.speedY=30;
+	this.speedX=30;
+	this.maxSpeed=10;
+	this.projectiles=[];
+	this.timer=0;
+    this.interval=1/this.fps;
+    this.fps=100;
+	this.frameX=0;
+	this.maxFrame=450;
+
+
+}
+
+update(deltaTime){
+
+	if(typeof carrot=="undefined"){(console.log("loading"))}else
+	
+
+	
+				{
+
+	// 	if(game.input.keys.includes("z")){carrot.position.z=carrot.position.z+1*this.speedX,camera.position.set(carrot.position.x-2,carrot.position.y+2,carrot.position.z-2)};
+	// if(game.input.keys.includes("q")){carrot.position.x=carrot.position.x+1*this.speedX,camera.position.set(carrot.position.x-2,carrot.position.y+2,carrot.position.z-2)};
+	// if(game.input.keys.includes("s")){carrot.position.z=carrot.position.z-1*this.speedX,camera.position.set(carrot.position.x-2,carrot.position.y+2,carrot.position.z-2)};
+	// if(game.input.keys.includes("d")){carrot.position.x=carrot.position.x-1*this.speedX,camera.position.set(carrot.position.x-2,carrot.position.y+2,carrot.position.z-2)};
+
+	offset.x = 500 ;
+ 	 offset.z = 500 ;
+	  offset.y = 200; 
+
+			
+
+	if(game.input.keys.includes("d")){; c=c-0.05; s=s-0.05;offset.x = offset.x*Math.sin(s), offset.z = offset.z*Math.cos(c);carrot.rotation.y=carrot.rotation.y-0.05; camera.position.copy( carrot.position ).add( offset  );camera.lookAt( carrot.position );if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
+	if(game.input.keys.includes("q")){; c=c+0.05; s=s+0.05;offset.x = offset.x*Math.sin(s), offset.z = offset.z*Math.cos(c);carrot.rotation.y=carrot.rotation.y+0.05;camera.position.copy( carrot.position ).add( offset  );camera.lookAt( carrot.position );if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
+				
+
+	if(game.input.keys.includes("z")){;carrot.position.z=carrot.position.z+pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x+pov.ray.direction.x*this.speedX;	temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
+
+	if(game.input.keys.includes("s")){;carrot.position.z=carrot.position.z-pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x-pov.ray.direction.x*this.speedX;temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
+	
+
+	if(game.input.keys.includes("1")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att1.anim).play().setDuration(0.5); }
+	if(game.input.keys.includes("2")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att2.anim).play(); }
+	if(game.input.keys.includes("3")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att3.anim).play(); }
+	if(game.input.keys.includes("4")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att4.anim).play(); }
+	if(game.input.keys.includes("5")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att5.anim).play(); }
+	if(game.input.keys.includes("6")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att6.anim).play(); }
+	if(game.input.keys.includes("7")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att7.anim).play(); }
+	if(game.input.keys.includes("8")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(run.anim).play(); }
+
+
+					}
+
+			// 		if(this.timer>this.interval){this.frameX++}
+            // else {this.timer+=deltaTime};
+
+            // if(this.frameX>this.maxFrame) 
+			
+			// 		{
+		
+
+	
+					mixersplayer.forEach( e =>
+				{
+						e.update( e._actions[0]._clip.duration/90 )  ;
+						// console.log(e._actions[0]._clip.duration )
+								// console.log(Object.getOwnPropertyNames(e),Object.values(e))
+				})
+
+				// this.frameX=0;
+				// this.timer=0;
+
+				// 	}
+
+			}
+
+
+			draw(context){
+
+
+			}}
+
+
+class Projecticle {
+
+constructor(game,x,y,z){
+
+	this.game=game;
+	this.x=x;
+	this.y=y;
+	this.y=z;
+	this.speed=20;
+	this.angle=0;
+	this.angleSpeed=Math.random()*0.2;
+	this.curve=Math.random()*10;
+
+
+
+}
+
+update(deltaTime){
+
+
+
+			if(sw.length<20)
+
+						{
+
+
+					sw.forEach(sword => 
+	
+					{
+
+						sword.rotation.y+=5,
+	
+						sword.position.x=sword.position.x+raycaster.ray.direction.x*4;
+						sword.position.y=sword.position.y+raycaster.ray.direction.y*4;
+						sword.position.z=sword.position.z+raycaster.ray.direction.z*4;
+
+
+						// console.log((raycaster.ray.direction.x,raycaster.ray.direction.y,raycaster.ray.direction.z));
+
+						// console.log(Object.getOwnPropertyNames(camera),Object.values(camera));
+	
+
+					});			 
+				
+																				
+	
+						} else {sw.forEach(s => scene.remove(s));sw=0;sw=[]};}
+
+
+
+				draw(context){
+
+
+
+
+					}}
+
+
+		
+
+class UI {
+
+constructor(game){
+
+	this.game=game;
+	this.fontSize=40;
+	this.fontFamiliy='Helvetica';
+	this.color='white';
+
+				}
+
+
+draw(context){
+
+
+	let msg="";
+	if(typeof carrot=="undefined"){(console.log("loading"))}else(msg=carrot.rotation.y+" "+camera.rotation.y);
+
+
+	context.save();
+	context.fillStyle=this.color;
+	context.shadowOffsetX=2;
+	context.shadowOffsetY=2;
+	context.shadowColor='black';
+
+	context.font=this.fontSize+'px '+this.fontFamiliy;
+	context.fillText('PRESS Q, S, D, Z to moveand LeftClick to shot actually using: '+this.game.input.keys,20,40);
+	context.fillText('PRESS ArrowUp or ArrowDown to move up or down ',20,80);
+	context.fillText('Target destroyed:  '+this.game.score,20,120);
+
+
+	context.restore();
+
+			}}
+
+
+		function LoadPlayer_and_NPC()
+		
+		{}
+
+		
+
+		function LoadCubes()
+		{
+	
+      var loader = new GLTFLoader();
+				loader.load( '../Assets/Rabbit/char.glb', function ( gltf )
+	
+			{
+	
+				{
+          carrot = gltf.scene;
+		
+		  carrot.name ="carrot";
+		//   console.log(gltf);
+		  
+		//   console.log(Object.getOwnPropertyNames(carrot),Object.values(carrot),carrot.id,carrot.name);
+		  
+ 
+          carrot.scale.set(100,100,100);
+		  
+          carrot.position.x = 0 ;
+          carrot.position.y = 20 ;
+          carrot.position.z = 0 ;
+
+		  carrot.rotation.y=110;
+		  carrot.add(goal);
+
+	
+          	 att1 = {anim:gltf.animations[0], speed:0.005}
+            att2 = {anim:gltf.animations[1], speed:0.005}
+		    att3 = {anim:gltf.animations[2], speed:0.005}
+		    att4 = {anim:gltf.animations[3], speed:0.005}
+		    att5 = {anim:gltf.animations[4], speed:0.005}
+		    att6 = {anim:gltf.animations[5], speed:0.005}
+		    att7 = {anim:gltf.animations[6], speed:0.005}
+		    run = {anim:gltf.animations[14], speed:0.005}
+
+
+             PlayerMixer2 = new THREE.AnimationMixer(carrot);
+
+             PlayerMixer2.clipAction(run.anim).play();
+			 mixersplayer.push(PlayerMixer2);
+     
+
+					      scene.add(carrot);
+						//   objectList.push(carrot);
+
+
+
+
+				};
+			});
+
+
+			var loader = new GLTFLoader();
+				loader.load( '../Assets/Rabbit/game_ready_city_building.glb', function ( gltf )
+
+			{
+			
+				{
+          brick = gltf.scene;
+
+ 
+          brick.scale.set(500,500,500);
+		  
+          brick.position.x = 2400 ;
+          brick.position.y = 0 ;
+          brick.position.z = 2400 ;
+
+			
+					      scene.add(brick);
+						  objectList.push(brick);
+				};
+
+			});
+
+
+
+
+
+			var loader = new GLTFLoader();
+				loader.load( '../Assets/Rabbit/char2.glb', function ( gltf )
+
+			{
+			
+				{
+          build = gltf.scene;
+		  build.name="build";
+
+		
+		  console.log(gltf);
+ 
+		  build.scale.set(100,100,100);
+		  
+          build.position.x = 0 ;
+          build.position.y = 20 ;
+          build.position.z = 0 ;
+	
+
+            let random = gltf.animations[0]; 
+			let random2 = gltf.animations[1]; 
+			let random3 = gltf.animations[9]; 
+			
+
+            let PlayerMixer = new THREE.AnimationMixer(build);
+
+
+            //  PlayerMixer.clipAction(random3).play();
+
+              mixers.push(PlayerMixer);
+
+					      scene.add(build);
+						  objectList.push(build);
+				};
+
+			});	
+
+
+				
+			var loader = new GLTFLoader();
+				loader.load( '../Assets/Rabbit/archery_target.glb', function ( gltf )
+				{
+
+           ballon = gltf.scene;
+
+		  ballon.name="ballon";
+
+          ballon.position.x = 0 ;
+          ballon.position.y = 0 ;
+          ballon.position.z = 0 ;
+
+		  ballon.scale.set(100,100,100);
+
+	
+           		scene.add(ballon);
+				objectList.push(ballon);
+	
+
+					
+				});
+
+
+				var loader = new GLTFLoader();
+				loader.load( '../Assets/Rabbit/park.glb', function ( gltf )
+				{
+
+					park = gltf.scene;
+
+		   park.name="park";
+
+		   park.position.x = 0 ;
+		   park.position.y = 0 ;
+		   park.position.z = 0 ;
+
+		   park.scale.set(100,100,100);
+
+	
+           		scene.add(park);
+				// objectList.push(park);
+	
+
+					
+				});
+
+
+
+		}
+
+		/*
+		* 	##################
+		*
+		*	 	FUNCTION INITSKY()
+		*		This function is taken from official ThreeJS Sky shader example.
+		*		This function in creating the beautiful sky color gradient shader + sun
+		*
+		*	##################
+		*/
+		function initSky()
+		{
+			// Add Sky
+			sky = new Sky();
+			sky.scale.setScalar( 450000 );
+			scene.add( sky );
+
+			sun = new THREE.Vector3();
+
+			// SKY OPTIONS
+			const effectController = {turbidity: 10,rayleigh: 3,mieCoefficient: 0.005,mieDirectionalG: 0.7,elevation: 2,azimuth: 45,exposure: renderer.toneMappingExposure};
+
+			const uniforms = sky.material.uniforms;
+			uniforms[ 'turbidity' ].value = effectController.turbidity;
+			uniforms[ 'rayleigh' ].value = effectController.rayleigh;
+			uniforms[ 'mieCoefficient' ].value = effectController.mieCoefficient;
+			uniforms[ 'mieDirectionalG' ].value = effectController.mieDirectionalG;
+
+			const phi = THREE.MathUtils.degToRad( 90 - effectController.elevation );
+			const theta = THREE.MathUtils.degToRad( effectController.azimuth );
+
+			sun.setFromSphericalCoords( 1, phi, theta );
+
+			uniforms[ 'sunPosition' ].value.copy( sun );
+
+			renderer.toneMappingExposure = effectController.exposure;
+			renderer.render( scene, camera );
+		}
+
+		/*
+		* 	##################
+		*
+		*	 	FUNCTION INIT()
+		*		This function is the entry point of our javascript application.
+		*		This function in creating all the basic settings like scene, camera, renderer.
+		*		This function is calling all the loading functions, and defining the main render loop.
+		*
+		*	##################
+		*/
+		function init()
+		{
+
+			/*
+			*
+			*	We are defining the main engine variables.
+			*	clock - to track elapsed time
+			*	scene - where 3D objects are diplayed
+			*	renderer - the threejs 3D display engine
+			*	controls - for camera controls
+			*	lights - to light up our scene
+			*
+			*
+			*	Calling the 3D models loading functions, events, and starting the render loop.
+			*
+			*/
+
+			clock = new THREE.Clock();
+			scene = new THREE.Scene();
+
+			// ---------------- RENDERER ----------------
+
+			renderer = new THREE.WebGLRenderer( { antialias : true } );
+			renderer.setPixelRatio( window.devicePixelRatio  );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement ); // we add the HTML element to the HTML page
+
+			// ---------------- CAMERA ----------------
+
+			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 10, 10000 );
+			scene.add( camera );
+
+			// ---------------- CONTROLS ----------------
+
+			// OrbitControls is used for the basic camera controls.
+			const controls = new OrbitControls( camera, renderer.domElement );
+			// controls.enabled = false
+			controls.update();
+
+
+
+			// ---------------- WHITE GRID HELPER ----------------
+
+			var helper = new THREE.GridHelper( 300, 4, 0xffffff, 0xffffff );
+			scene.add( helper );
+
+			// ---------------- LIGHTS ----------------
+
+			var ambientLight = new THREE.AmbientLight( 0xcccccc, 1 );
+			scene.add( ambientLight );
+
+			const directionalLight = new THREE.DirectionalLight( 0xffffff, 2 );
+			directionalLight.position.set( - 1, 1, 1 );
+			scene.add( directionalLight );
+
+			// ---------------- CALLING LOADING AND INIT FUNCTIONS ----------------
+
+			LoadCubes();
+			LoadPlayer_and_NPC();
+			initSky();
+
+			// ---------------- PERFORMANCE STATS PLUGIN ----------------
+
+			stats = new Stats();
+			stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+			document.body.appendChild( stats.dom );
+
+			// ---------------- EVENTS ----------------
+
+			window.addEventListener( 'resize', onWindowResize, false );
+			// document.addEventListener('click', mouseMove , false);
+			document.addEventListener('mousemove', mouseMove2 , false);
+			document.addEventListener('keydown', checkcollision , false);
+
+			 // ---------------- STARTING THE GAME MAIN LOOP ----------------
+
+			 game.init();
+
+			render();
+		}
+
+		/*
+		* 	##################
+		*
+		*	 	FUNCTION CheckLoaded()
+		*		This function is only used to check if all 3D models are loaded.
+		*		We are simply checking if some global variables are valid.
+		*
+		*		Return true if everything is loaded and ready to use
+		*		Return false if at least something is not loaded and not ready to use yet
+		*
+		*	##################
+		*/
+		function CheckLoaded()
+		{
+				if(fence_cube == undefined)
+				{
+					return false;
+				}
+
+				if(fence_angle_cube == undefined)
+				{
+					return false;
+				}
+
+				if(fence_seamless_cube == undefined)
+				{
+					return false;
+				}
+
+				if(tree_cube == undefined)
+				{
+					return false;
+				}
+
+				if(plant_cube == undefined)
+				{
+					return false;
+				}
+
+				if(basic_cube == undefined)
+				{
+					return false;
+				}
+
+				if(rabbit == undefined)
+				{
+					return false;
+				}
+
+				if(carrot == undefined)
+				{
+					return false;
+				}
+
+
+				return true;
+		}
+
+		class Enemy {
+
+constructor(game){
+
+this.game=game;
+
+this.speedX=Math.random()*5;
+this.lives=10;
+this.score=this.lives;
+this.pool=0;
+this.enemyTimer=0;
+this.enemyInterval=500;    
+this.angle= Math.random();
+this.curve=Math.random()*200+50;
+
+
+
+
+	}
+
+		update(deltaTime,key){
+
+
+			if(typeof ballon=="undefined"){(console.log("loading"))}else {
+
+				if(this.pool<10){
+			
+
+	key = SkeletonUtils.clone( ballon);
+	key.position.x = Math.floor(Math.random()*5000+500);
+	key.position.z = Math.floor(Math.random()*10+2);
+	key.position.y = Math.floor(Math.random()*5000+500);
+
+	key.name="target";
+
+		this.pool+=1;
+
+		ballons.push(key);
+		scene.add(key);
+		objectList.push(key);
+	
+
+				}
+			
+				if(this.enemyTimer>this.enemyInterval)
+
+						{
+			
+				ballons.forEach(b => 
+
+				{
+
+				
+				b.position.x = b.position.x+Math.floor(Math.random()*4-2)*this.speedX*Math.sin(this.angle*Math.PI/90);
+					b.position.z = b.position.z+Math.floor(Math.random()*4-2)*this.speedX*Math.cos(this.angle*Math.PI/500);
+						b.rotation.z += 0.05;
+			
+							// console.log(Object.getOwnPropertyNames(b),Object.values(b));
+
+			
+					})} else {this.enemyTimer+=deltaTime};
+			
+			
+			}
+
+			if(targettrigger==true){this.pool=this.pool-1;targettrigger=false;}
+					
+
+
+			}
+
+
+			draw(context){
+
+
+
+
+	
+				}}
+
+
+		class Game {
+
+constructor(width,height){
+
+	this.width=width;
+	this.height=height;
+	this.player = new Player(this);
+	this.input= new InputHandler(this);
+	this.ui=new UI(this);
+	this.enemy=new Enemy(this);
+	this.score=0;
+
+
+					}
+
+
+
+		update(deltaTime){
+
+
+	this.player.update(deltaTime);
+
+
+	let key=Math.floor(Math.random()*10)+Math.floor(Math.random()*10)+Math.floor(Math.random()*10)+Math.floor(Math.random()*10);
+
+	this.enemy.update(deltaTime,key);
+
+	if(scoretrigger==true){this.score=this.score+1;scoretrigger=false;}
+					
+								
+
+			}
+
+		
+		draw(context){
+	
+		this.ui.draw(context);
+
+
+			}
+		
+
+			init(){}
+		
+		}
+
+
+
+const game = new Game(canvas.width,canvas.height);
+let lastTime=0;
+
+
+		function render(timeStamp)
+		{
+			stats.begin(); //performance stats
+
+			var delta = clock.getDelta(); //get delta time between two frames
+
+
+			if( is_Loaded == false)
+			{
+				if( CheckLoaded())
+				{
+					
+
+					is_Loaded = true;
+
+			
+					InitMap();
+			
+				
+				}
+			}
+			else 
+			{}
+
+
+			const deltaTime=timeStamp-lastTime;
+        lastTime=timeStamp;
+	
+
+			mixers.forEach( e =>
+				{
+						e.update( delta );
+		
+				})
+
+
+			
+
+				// console.log(mixers);	
+				
+			
+			renderer.render( scene, camera ); 	
+			stats.end();					 	
+
+
+		
+
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+
+        game.update(deltaTime);
+        game.draw(ctx);
+			
+	
+
+			requestAnimationFrame( render );	
+
+		
+		}
+
+
+
+
+
+
+		function InitMap()
+		{}
+
+		/*
+		* 	##################
+		*
+		*	 	FUNCTION ONWINDOWRESIZE()
+		*		This function is called when the window is resized, update the camera projection to fit the new size
+		*
+		*	##################
+		*/
+		function onWindowResize()
+		{
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize( window.innerWidth, window.innerHeight );
+		}
+
+		init();
+
+
+	})
+
+
+
+	</script>
+
+</head>
+
+<body>
+	<canvas id="canvas1" ></canvas>
+</body>
