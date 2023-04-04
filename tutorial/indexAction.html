@@ -129,9 +129,12 @@ img {
 		   let att6 ;
 		   let att7 ;
 		   let run;
+		   
+		   let boxplayer;
+		   let boxtarget;
+			let collisionpool=[];
+			let meshplayer;
 
-
-		
 
 		// Performance stats
 		var stats;
@@ -240,12 +243,45 @@ img {
 			}}
 
 
-function checkcollision(event)
+function checkcollision(e)
 
 			{
 
+
+				// console.log(e);
+
+				if(typeof boxplayer=="undefined"){(console.log("loading"))}else {
+
+
+				// console.log({...key.children[0].children[0].children[0].children[0].children[1].geometry.boundingBox});
+
+				// console.log(boxplayer);
+
+				// console.log(e);
+
+				// if(typeof key=="undefined"){(console.log("loading"))}else {
+				
+					boxplayer.intersectsBox(e);
+
+
+					// console.log(boxplayer.intersectsBox(e));
+
+				
+					// console.log({...e.children[0].children[0].children[0].children[0].children[1].geometry.boundingBox}.isBox3)
 				
 
+						// console.log(boxplayer.intersectsBox(boxtarget),boxplayer,boxtarget);
+
+
+					// console.log(Object.getOwnPropertyNames(boxplayer),Object.values(boxplayer));
+
+
+				}
+
+					
+
+
+				
 
 
 
@@ -415,6 +451,9 @@ update(deltaTime){
 				{
 
 
+	
+
+
 	offset.x = 500 ;
  	 offset.z = 500 ;
 	  offset.y = 200; 
@@ -425,9 +464,31 @@ update(deltaTime){
 	if(game.input.keys.includes("q")){; c=c+0.05; s=s+0.05;offset.x = offset.x*Math.sin(s), offset.z = offset.z*Math.cos(c);carrot.rotation.y=carrot.rotation.y+0.05;camera.position.copy( carrot.position ).add( offset  );camera.lookAt( carrot.position );if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
 				
 
-	if(game.input.keys.includes("z")){;carrot.position.z=carrot.position.z+pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x+pov.ray.direction.x*this.speedX;	temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
+	// console.log(carrot.children[1].geometry.boundingBox);
 
-	if(game.input.keys.includes("s")){;carrot.position.z=carrot.position.z-pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x-pov.ray.direction.x*this.speedX;temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
+	// console.log(boxplayer.copy(carrot.children[1].geometry.boundingBox).applyMatrix4(carrot.children[0].matrixWorld));
+
+
+
+
+
+	// if(game.input.keys.includes("z")){;carrot.position.z=carrot.position.z+pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x+pov.ray.direction.x*this.speedX;	temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );		 boxplayer.copy(carrot.children[1].geometry.boundingBox).applyMatrix4(carrot.children[0].matrixWorld);if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
+
+	// if(game.input.keys.includes("s")){;carrot.position.z=carrot.position.z-pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x-pov.ray.direction.x*this.speedX;temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );		 boxplayer.copy(carrot.children[1].geometry.boundingBox).applyMatrix4(carrot.children[0].matrixWorld);if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
+
+	if(game.input.keys.includes("z")){;carrot.position.z=carrot.position.z+pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x+pov.ray.direction.x*this.speedX;	temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );;meshplayer.position.set(carrot.position.x,carrot.position.y,carrot.position.z); boxplayer.setFromObject(meshplayer);	 carrot.children[2].geometry.boundingBox.copy(meshplayer.geometry.boundingBox).applyMatrix4(meshplayer.matrixWorld);;if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
+
+if(game.input.keys.includes("s")){;carrot.position.z=carrot.position.z-pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x-pov.ray.direction.x*this.speedX;temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );;meshplayer.position.set(carrot.position.x,carrot.position.y,carrot.position.z); boxplayer.setFromObject(meshplayer);		carrot.children[2].geometry.boundingBox.copy(meshplayer.geometry.boundingBox).applyMatrix4(meshplayer.matrixWorld);;if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
+
+console.log(meshplayer.geometry.boundingBox,boxplayer)
+
+// console.log(carrot,carrot.children[2].geometry.boundingBox,boxplayer);
+
+// console.log(boxplayer.copy(meshplayer.geometry.boundingBox).applyMatrix4(meshplayer.matrixWorld))
+
+// console.log(carrot)
+
+// console.log(carrot)
 	
 
 	if(game.input.keys.includes("1")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att1.anim).play().setDuration(0.5); }
@@ -572,21 +633,60 @@ draw(context){
 	
 				{
           carrot = gltf.scene;
+
+
 		
 		  carrot.name ="carrot";
 		//   console.log(gltf);
 		  
 		//   console.log(Object.getOwnPropertyNames(carrot),Object.values(carrot),carrot.id,carrot.name);
 		  
- 
-          carrot.scale.set(100,100,100);
+
+		carrot.scale.set(100,100,100);
 		  
           carrot.position.x = 0 ;
           carrot.position.y = 20 ;
           carrot.position.z = 0 ;
 
 		  carrot.rotation.y=110;
-		  carrot.add(goal);
+	
+
+		 boxplayer = new THREE.Box3();
+
+		 boxplayer.set(new THREE.Vector3(),new THREE.Vector3());
+
+		 const geometry = new THREE.BoxGeometry( 2000, 2000, 2000 );
+		const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+		meshplayer = new THREE.Mesh( geometry, material );
+
+
+		meshplayer.position.set(carrot.position.x,carrot.position.y,carrot.position.z);
+
+		carrot.add(meshplayer);
+
+		 boxplayer.setFromObject(meshplayer);
+
+		 carrot.children[2].geometry.boundingBox.copy(meshplayer.geometry.boundingBox).applyMatrix4(meshplayer.matrixWorld);
+
+		 
+		 carrot.add(goal);
+
+
+		//  console.log(carrot.children[0], typeof carrot.children[0]);
+
+		//  console.log(carrot.children[1]);
+
+		// const xSize = boundingBox.max.x - boundingBox.min.x
+		// const ySize = boundingBox.max.y - boundingBox.min.y
+		// const zSize = boundingBox.max.z - boundingBox.min.z
+
+		// const maxSize = Math.max(200, 200, 200)
+
+
+
+					// console.log(carrot.children[1]);
+					// console.log(boxplayer);
+
 
 	
           	 att1 = {anim:gltf.animations[0], speed:0.005}
@@ -651,7 +751,7 @@ draw(context){
 		  build.name="build";
 
 		
-		  console.log(gltf);
+		//   console.log(gltf);
  
 		  build.scale.set(100,100,100);
 		  
@@ -685,7 +785,28 @@ draw(context){
 				{
 
            ballon = gltf.scene;
+					
 
+		//    boxtarget = new THREE.Box3();
+
+		//    boxtarget.set(new THREE.Vector3(),new THREE.Vector3());
+
+			// boxtarget.setFromObject(ballon.children[1]);
+
+
+
+			// if(typeof ballon=="undefined"){(console.log("loading"))}else(
+
+
+			// console.log(Object.getOwnPropertyNames(ballon.children[0].children[0].children[0].children[0].children[1].geometry.boundingBox),Object.values(ballon.children[0].children[0].children[0].children[0].children[1].geometry.boundingBox))
+
+
+			// );
+
+			 
+
+
+					
 		  ballon.name="ballon";
 
           ballon.position.x = 0 ;
@@ -694,7 +815,7 @@ draw(context){
 
 		  ballon.scale.set(100,100,100);
 
-	
+					
            		scene.add(ballon);
 				objectList.push(ballon);
 	
@@ -849,7 +970,7 @@ draw(context){
 			window.addEventListener( 'resize', onWindowResize, false );
 			// document.addEventListener('click', mouseMove , false);
 			document.addEventListener('mousemove', mouseMove2 , false);
-			document.addEventListener('keydown', checkcollision , false);
+			
 
 			 // ---------------- STARTING THE GAME MAIN LOOP ----------------
 
@@ -936,48 +1057,82 @@ this.curve=Math.random()*200+50;
 
 	}
 
-		update(deltaTime,key){
+		update(deltaTime,key,keybox){
 
 
 			if(typeof ballon=="undefined"){(console.log("loading"))}else {
 
+
+	
+
 				if(this.pool<10){
 			
 
+			
+
 	key = SkeletonUtils.clone( ballon);
-	key.position.x = Math.floor(Math.random()*5000+500);
-	key.position.z = Math.floor(Math.random()*10+2);
-	key.position.y = Math.floor(Math.random()*5000+500);
+	key.position.x = Math.floor(Math.random()*-5000-1000);
+	key.position.z = Math.floor(Math.random()*-5000+500)
+	key.position.y = 0
 
 	key.name="target";
 
+	keybox = new THREE.Box3();
+
+	keybox.set(new THREE.Vector3(),new THREE.Vector3());
+
+	const geometry = new THREE.BoxGeometry( 2000, 2000, 2000 );
+		const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+		const mesh = new THREE.Mesh( geometry, material );
+
+		mesh.position.set(key.position.x,key.position.y,key.position.z);
+
+		key.add(mesh);
+
+		keybox.setFromObject(mesh);
+
+		key.children[1].geometry.boundingBox.copy(mesh.geometry.boundingBox).applyMatrix4(mesh.matrixWorld);
+
+		
+		// console.log( key.children[1].geometry.boundingBox,  keybox)
+
+		// key.add(keybox);
+
+		// console.log(mesh,key.children[1],key);
+
+	// console.log(mesh.geometry.boundingBox,mesh,keybox);
+	
+
+	// console.log(keybox.copy(mesh.geometry.boundingBox).applyMatrix4(mesh.matrixWorld));
+	// console.log(	keybox.setFromObject(key.children[0].children[0].children[0].children[0].children[1]))
+
+	// console.log(key,typeof key)
+	// console.log(key.children[0].children[0].children[0].children[0].isMesh());
+	// console.log(key,keybox );
+
+	// console.log(Object.getOwnPropertyNames(key.children[0].children[0].children[0].children[0].children[1].geometry.boundingBox),Object.values(key.children[0].children[0].children[0].children[0].children[1].geometry.boundingBox))
+
 		this.pool+=1;
+
+		collisionpool.push(keybox);
 
 		ballons.push(key);
 		scene.add(key);
 		objectList.push(key);
 	
-
+					
 				}
 			
-				if(this.enemyTimer>this.enemyInterval)
 
-						{
-			
-				ballons.forEach(b => 
-
-				{
-
+				collisionpool.forEach(e => 
 				
-				b.position.x = b.position.x+Math.floor(Math.random()*4-2)*this.speedX*Math.sin(this.angle*Math.PI/90);
-					b.position.z = b.position.z+Math.floor(Math.random()*4-2)*this.speedX*Math.cos(this.angle*Math.PI/500);
-						b.rotation.z += 0.05;
-			
-							// console.log(Object.getOwnPropertyNames(b),Object.values(b));
+					{
+							
+				document.addEventListener('keydown', checkcollision(e) , false);
 
-			
-					})} else {this.enemyTimer+=deltaTime};
-			
+					})	
+
+
 			
 			}
 
@@ -1022,7 +1177,12 @@ constructor(width,height){
 
 	let key=Math.floor(Math.random()*10)+Math.floor(Math.random()*10)+Math.floor(Math.random()*10)+Math.floor(Math.random()*10);
 
-	this.enemy.update(deltaTime,key);
+	let keybox=Math.floor(Math.random()*10)+Math.floor(Math.random()*10)+Math.floor(Math.random()*10)+Math.floor(Math.random()*10);
+
+	this.enemy.update(deltaTime,key,keybox);
+
+
+
 
 	if(scoretrigger==true){this.score=this.score+1;scoretrigger=false;}
 					
