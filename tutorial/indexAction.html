@@ -134,6 +134,7 @@ img {
 		   let boxtarget;
 			let collisionpool=[];
 			let meshplayer;
+			let effectivecollision=[];
 
 
 		// Performance stats
@@ -259,12 +260,91 @@ function checkcollision(e)
 
 				// console.log(e);
 
-				// if(typeof key=="undefined"){(console.log("loading"))}else {
+			
 				
-					boxplayer.intersectsBox(e);
+				if(	boxplayer.intersectsBox(e.box))
+
+				{
+
+					// console.log(boxplayer.intersectsBox(e.box));
+
+					effectivecollision.push(e.key);
 
 
-					// console.log(boxplayer.intersectsBox(e));
+					var loader = new GLTFLoader();
+				loader.load( '../Assets/Rabbit/beach_ball.glb', function ( gltf )
+				{
+
+          fx = gltf.scene;
+
+
+		  var loader2 = new GLTFLoader();
+				loader2.load( '../Assets/Rabbit/timeframe_explosion.glb', function ( gltf2 )
+				{
+
+					fxtarget=gltf2.scene;
+					fxtarget.name="fxtarget";
+					fxpool.push(fxtarget);
+
+					// console.log(fxtarget.uuid);
+
+         	   let Anim_IDLE = gltf2.animations[0]; 
+
+            let PlayerMixer = new THREE.AnimationMixer(fxtarget);
+
+             PlayerMixer.clipAction(Anim_IDLE).play();
+              mixers.push(PlayerMixer);
+
+
+
+		  effectivecollision.forEach( ec =>
+
+
+						{
+
+							// console.log(ec)
+							fx.position.x = ec.position.x ;
+          					fx.position.y = ec.position.y ;
+          					fx.position.z = ec.position.z ;
+
+		  					fx.scale.set(100,100,100);
+
+							  fxtarget.position.x = ec.position.x ;
+          					fxtarget.position.y = ec.position.y ;
+          					fxtarget.position.z = ec.position.z ;	
+
+		  					fxtarget.scale.set(50,50,50);
+
+							// console.log(fxtarget.animations,gltf2.animations[0]);
+							// console.log(Object.getOwnPropertyNames(gltf2),Object.values(gltf2));
+							
+
+           					scene.add(fx);
+		  					 objectList.push(fx);
+			
+
+					
+							if(ec.name=="target"){ scene.remove(ec);fxpool.filter(e => e!=fxtarget).forEach(f => scene.remove(f));scene.add(fxtarget);collisionpool.filter(c => c.key!=ec);collisionpool.filter(c => c.key.children[1].geometry.boundingBox!=e.box);effectivecollision.filter(d => d!=ec);targettrigger=true;scoretrigger=true;}
+						
+
+							// console.log(Object.getOwnPropertyNames(e),Object.values(e));
+							
+							// console.log(scene);
+							// console.log(Object.getOwnPropertyNames(e.object.parent.parent.parent.parent.parent),Object.values(e.object.parent.parent.parent.parent.parent));
+							
+							
+						}
+
+
+		  )
+    
+		//    console.log(intersects);
+					
+				});
+
+			});
+					
+			
 
 				
 					// console.log({...e.children[0].children[0].children[0].children[0].children[1].geometry.boundingBox}.isBox3)
@@ -285,7 +365,7 @@ function checkcollision(e)
 
 
 
-			}
+			}}
 
 
 
@@ -321,105 +401,8 @@ function mouseMove2(event)
 	  	function mouseMove(event)
       {		
 			
-          event.preventDefault();
-
-		  pointer.x = (event.clientX / window.innerWidth) *2 -1;
-          pointer.y = - (event.clientY / window.innerHeight) *2 +1;
-
-	
-
-          // RAYCASTER
-
-          raycaster.setFromCamera(pointer, camera);
-
-		//   raycaster.far=500;
-
-          var intersects = raycaster.intersectObjects(objectList);
 
 
-			// console.log(Object.getOwnPropertyNames(raycaster),Object.values(raycaster));
-			// console.log((raycaster.ray.direction.x,raycaster.ray.direction.y,raycaster.ray.direction.z));
-
-
-          if(intersects.length > 0)
-          {
-     
-
-			  var loader = new GLTFLoader();
-				loader.load( '../Assets/Rabbit/beach_ball.glb', function ( gltf )
-				{
-
-          fx = gltf.scene;
-
-
-		  var loader2 = new GLTFLoader();
-				loader2.load( '../Assets/Rabbit/timeframe_explosion.glb', function ( gltf2 )
-				{
-
-					fxtarget=gltf2.scene;
-					fxtarget.name="fxtarget";
-					fxpool.push(fxtarget);
-
-					// console.log(fxtarget.uuid);
-
-         	   let Anim_IDLE = gltf2.animations[0]; 
-
-            let PlayerMixer = new THREE.AnimationMixer(fxtarget);
-
-             PlayerMixer.clipAction(Anim_IDLE).play();
-              mixers.push(PlayerMixer);
-
-
-
-		  intersects.forEach( e =>
-
-
-						{
-
-					
-
-							fx.position.x = e.point.x ;
-          					fx.position.y = e.point.y ;
-          					fx.position.z = e.point.z ;
-
-		  					fx.scale.set(100,100,100);
-
-							  fxtarget.position.x = e.point.x ;
-          					fxtarget.position.y = e.point.y ;
-          					fxtarget.position.z = e.point.z ;	
-
-		  					fxtarget.scale.set(500,500,500);
-
-							// console.log(fxtarget.animations,gltf2.animations[0]);
-							// console.log(Object.getOwnPropertyNames(gltf2),Object.values(gltf2));
-							
-
-           					scene.add(fx);
-		  					 objectList.push(fx);
-							   game.input.keys.splice(game.input.keys.indexOf("click"),1);
-
-								
-					
-							if(e.object.parent.parent.parent.parent.parent.name=="target"){ scene.remove(e.object.parent.parent.parent.parent.parent);scene.remove(fx);fxpool.filter(e => e!=fxtarget).forEach(f => scene.remove(f));scene.add(fxtarget);targettrigger=true;scoretrigger=true;game.input.keys.splice(game.input.keys.indexOf("click"),1)}
-						
-							// console.log(Object.getOwnPropertyNames(e),Object.values(e));
-							
-							// console.log(scene);
-							// console.log(Object.getOwnPropertyNames(e.object.parent.parent.parent.parent.parent),Object.values(e.object.parent.parent.parent.parent.parent));
-							
-							
-						}
-
-
-		  )
-    
-		//    console.log(intersects);
-					
-				});
-
-			});
-          }
-          else {}
       }
 
 
@@ -476,11 +459,11 @@ update(deltaTime){
 
 	// if(game.input.keys.includes("s")){;carrot.position.z=carrot.position.z-pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x-pov.ray.direction.x*this.speedX;temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );		 boxplayer.copy(carrot.children[1].geometry.boundingBox).applyMatrix4(carrot.children[0].matrixWorld);if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
 
-	if(game.input.keys.includes("z")){;carrot.position.z=carrot.position.z+pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x+pov.ray.direction.x*this.speedX;	temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );;meshplayer.position.set(carrot.position.x,carrot.position.y,carrot.position.z); boxplayer.setFromObject(meshplayer);	 carrot.children[2].geometry.boundingBox.copy(meshplayer.geometry.boundingBox).applyMatrix4(meshplayer.matrixWorld);;if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
+	if(game.input.keys.includes("z")){;carrot.position.z=carrot.position.z+pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x+pov.ray.direction.x*this.speedX;	temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );;meshplayer.position.set(carrot.position.x,carrot.position.y,carrot.position.z); boxplayer.setFromObject(meshplayer);	 ;;if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
 
-if(game.input.keys.includes("s")){;carrot.position.z=carrot.position.z-pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x-pov.ray.direction.x*this.speedX;temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );;meshplayer.position.set(carrot.position.x,carrot.position.y,carrot.position.z); boxplayer.setFromObject(meshplayer);		carrot.children[2].geometry.boundingBox.copy(meshplayer.geometry.boundingBox).applyMatrix4(meshplayer.matrixWorld);;if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
+if(game.input.keys.includes("s")){;carrot.position.z=carrot.position.z-pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x-pov.ray.direction.x*this.speedX;temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );;meshplayer.position.set(carrot.position.x,carrot.position.y,carrot.position.z); boxplayer.setFromObject(meshplayer);		;;if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
 
-console.log(meshplayer.geometry.boundingBox,boxplayer)
+// console.log( boxplayer.min.x,boxplayer.max.x,boxplayer.min.z,boxplayer.max.z)
 
 // console.log(carrot,carrot.children[2].geometry.boundingBox,boxplayer);
 
@@ -520,63 +503,6 @@ console.log(meshplayer.geometry.boundingBox,boxplayer)
 
 			}}
 
-
-class Projecticle {
-
-constructor(game,x,y,z){
-
-	this.game=game;
-	this.x=x;
-	this.y=y;
-	this.y=z;
-	this.speed=20;
-	this.angle=0;
-	this.angleSpeed=Math.random()*0.2;
-	this.curve=Math.random()*10;
-
-
-
-}
-
-update(deltaTime){
-
-
-
-			if(sw.length<20)
-
-						{
-
-
-					sw.forEach(sword => 
-	
-					{
-
-						sword.rotation.y+=5,
-	
-						sword.position.x=sword.position.x+raycaster.ray.direction.x*4;
-						sword.position.y=sword.position.y+raycaster.ray.direction.y*4;
-						sword.position.z=sword.position.z+raycaster.ray.direction.z*4;
-
-
-						// console.log((raycaster.ray.direction.x,raycaster.ray.direction.y,raycaster.ray.direction.z));
-
-						// console.log(Object.getOwnPropertyNames(camera),Object.values(camera));
-	
-
-					});			 
-				
-																				
-	
-						} else {sw.forEach(s => scene.remove(s));sw=0;sw=[]};}
-
-
-
-				draw(context){
-
-
-
-
-					}}
 
 
 		
@@ -655,7 +581,7 @@ draw(context){
 
 		 boxplayer.set(new THREE.Vector3(),new THREE.Vector3());
 
-		 const geometry = new THREE.BoxGeometry( 2000, 2000, 2000 );
+		 const geometry = new THREE.BoxGeometry( 300, 300, 300 );
 		const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
 		meshplayer = new THREE.Mesh( geometry, material );
 
@@ -666,7 +592,7 @@ draw(context){
 
 		 boxplayer.setFromObject(meshplayer);
 
-		 carrot.children[2].geometry.boundingBox.copy(meshplayer.geometry.boundingBox).applyMatrix4(meshplayer.matrixWorld);
+		//  carrot.children[2].geometry.boundingBox.copy(meshplayer.geometry.boundingBox).applyMatrix4(meshplayer.matrixWorld);
 
 		 
 		 carrot.add(goal);
@@ -675,13 +601,6 @@ draw(context){
 		//  console.log(carrot.children[0], typeof carrot.children[0]);
 
 		//  console.log(carrot.children[1]);
-
-		// const xSize = boundingBox.max.x - boundingBox.min.x
-		// const ySize = boundingBox.max.y - boundingBox.min.y
-		// const zSize = boundingBox.max.z - boundingBox.min.z
-
-		// const maxSize = Math.max(200, 200, 200)
-
 
 
 					// console.log(carrot.children[1]);
@@ -786,26 +705,6 @@ draw(context){
 
            ballon = gltf.scene;
 					
-
-		//    boxtarget = new THREE.Box3();
-
-		//    boxtarget.set(new THREE.Vector3(),new THREE.Vector3());
-
-			// boxtarget.setFromObject(ballon.children[1]);
-
-
-
-			// if(typeof ballon=="undefined"){(console.log("loading"))}else(
-
-
-			// console.log(Object.getOwnPropertyNames(ballon.children[0].children[0].children[0].children[0].children[1].geometry.boundingBox),Object.values(ballon.children[0].children[0].children[0].children[0].children[1].geometry.boundingBox))
-
-
-			// );
-
-			 
-
-
 					
 		  ballon.name="ballon";
 
@@ -968,7 +867,6 @@ draw(context){
 			// ---------------- EVENTS ----------------
 
 			window.addEventListener( 'resize', onWindowResize, false );
-			// document.addEventListener('click', mouseMove , false);
 			document.addEventListener('mousemove', mouseMove2 , false);
 			
 
@@ -1074,6 +972,7 @@ this.curve=Math.random()*200+50;
 	key.position.x = Math.floor(Math.random()*-5000-1000);
 	key.position.z = Math.floor(Math.random()*-5000+500)
 	key.position.y = 0
+	key.rotation.y = Math.floor(Math.random()*360)
 
 	key.name="target";
 
@@ -1081,7 +980,7 @@ this.curve=Math.random()*200+50;
 
 	keybox.set(new THREE.Vector3(),new THREE.Vector3());
 
-	const geometry = new THREE.BoxGeometry( 2000, 2000, 2000 );
+	const geometry = new THREE.BoxGeometry( 300, 300, 300 );
 		const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
 		const mesh = new THREE.Mesh( geometry, material );
 
@@ -1091,9 +990,13 @@ this.curve=Math.random()*200+50;
 
 		keybox.setFromObject(mesh);
 
-		key.children[1].geometry.boundingBox.copy(mesh.geometry.boundingBox).applyMatrix4(mesh.matrixWorld);
+		// console.log(key)
+
+		// key.children[1].geometry.boundingBox.copy(mesh.geometry.boundingBox).applyMatrix4(mesh.matrixWorld);
 
 		
+		console.log(key)
+
 		// console.log( key.children[1].geometry.boundingBox,  keybox)
 
 		// key.add(keybox);
@@ -1114,11 +1017,13 @@ this.curve=Math.random()*200+50;
 
 		this.pool+=1;
 
-		collisionpool.push(keybox);
+		collisionpool.push({box:keybox, key:key});
 
 		ballons.push(key);
 		scene.add(key);
 		objectList.push(key);
+
+		// console.log(collisionpool)
 	
 					
 				}
