@@ -135,6 +135,7 @@ img {
 			let collisionpool=[];
 			let meshplayer;
 			let effectivecollision=[];
+			
 
 
 		// Performance stats
@@ -151,6 +152,7 @@ img {
 		  let goal = new THREE.Object3D;
 		  var temp = new THREE.Vector3;
 		  goal.position.set(0, 2, -4);
+
 
 		/*
 		* 	##################
@@ -251,18 +253,20 @@ function checkcollision(e)
 
 				// console.log(e);
 
-				if(typeof boxplayer=="undefined"){(console.log("loading"))}else {
+				if(typeof carrot.children[2].geometry.boundingBox=="undefined"){(console.log("loading"))}else {
 
 
 				// console.log({...key.children[0].children[0].children[0].children[0].children[1].geometry.boundingBox});
 
-				// console.log(boxplayer);
+				// console.log(carrot.children[2].geometry.boundingBox);
 
-				// console.log(e);
+				// console.log(e.box);
+
+				// console.log(carrot.children[2].geometry.boundingBox.intersectsBox(e.box));
 
 			
 				
-				if(	boxplayer.intersectsBox(e.box))
+				if(	carrot.children[2].geometry.boundingBox.intersectsBox(e.box))
 
 				{
 
@@ -324,7 +328,7 @@ function checkcollision(e)
 			
 
 					
-							if(ec.name=="target"){ scene.remove(ec);fxpool.filter(e => e!=fxtarget).forEach(f => scene.remove(f));scene.add(fxtarget);collisionpool.filter(c => c.key!=ec);collisionpool.filter(c => c.key.children[1].geometry.boundingBox!=e.box);effectivecollision.filter(d => d!=ec);targettrigger=true;scoretrigger=true;}
+							if(ec.name=="target"){ scene.remove(ec);fxpool.filter(e => e!=fxtarget).forEach(f => scene.remove(f));scene.add(fxtarget);collisionpool.filter(c => c.key!=ec);collisionpool.filter(c => c.key.children[2].geometry.boundingBox!=e.box);effectivecollision.filter(d => d!=ec);targettrigger=true;scoretrigger=true;}
 						
 
 							// console.log(Object.getOwnPropertyNames(e),Object.values(e));
@@ -459,11 +463,13 @@ update(deltaTime){
 
 	// if(game.input.keys.includes("s")){;carrot.position.z=carrot.position.z-pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x-pov.ray.direction.x*this.speedX;temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );		 boxplayer.copy(carrot.children[1].geometry.boundingBox).applyMatrix4(carrot.children[0].matrixWorld);if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
 
-	if(game.input.keys.includes("z")){;carrot.position.z=carrot.position.z+pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x+pov.ray.direction.x*this.speedX;	temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );;meshplayer.position.set(carrot.position.x,carrot.position.y,carrot.position.z); boxplayer.setFromObject(meshplayer);	 ;;if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
+	if(game.input.keys.includes("z")){;carrot.position.z=carrot.position.z+pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x+pov.ray.direction.x*this.speedX;	temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );;;carrot.children[2].geometry.boundingBox.copy(boxplayer).applyMatrix4(meshplayer.matrixWorld);	 ;;if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
 
-if(game.input.keys.includes("s")){;carrot.position.z=carrot.position.z-pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x-pov.ray.direction.x*this.speedX;temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );;meshplayer.position.set(carrot.position.x,carrot.position.y,carrot.position.z); boxplayer.setFromObject(meshplayer);		;;if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
+if(game.input.keys.includes("s")){;carrot.position.z=carrot.position.z-pov.ray.direction.z*this.speedX,carrot.position.x=carrot.position.x-pov.ray.direction.x*this.speedX;temp.setFromMatrixPosition(goal.matrixWorld);camera.position.lerp(temp, 0.2);camera.lookAt( carrot.position );;;carrot.children[2].geometry.boundingBox.copy(boxplayer).applyMatrix4(meshplayer.matrixWorld);		;;if(game.input.keys.includes("click"))game.input.keys.splice(game.input.keys.indexOf("click"),1)};
 
 // console.log( boxplayer.min.x,boxplayer.max.x,boxplayer.min.z,boxplayer.max.z)
+
+// console.log(carrot.children[2].geometry.boundingBox.min.x,carrot.children[2].geometry.boundingBox.min.z,meshplayer.geometry.boundingBox.min.x,meshplayer.geometry.boundingBox.min.z)	
 
 // console.log(carrot,carrot.children[2].geometry.boundingBox,boxplayer);
 
@@ -471,17 +477,17 @@ if(game.input.keys.includes("s")){;carrot.position.z=carrot.position.z-pov.ray.d
 
 // console.log(carrot)
 
-// console.log(carrot)
+// console.log(boxplayer)
 	
 
-	if(game.input.keys.includes("1")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att1.anim).play().setDuration(0.5); }
-	if(game.input.keys.includes("2")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att2.anim).play(); }
-	if(game.input.keys.includes("3")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att3.anim).play(); }
-	if(game.input.keys.includes("4")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att4.anim).play(); }
-	if(game.input.keys.includes("5")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att5.anim).play(); }
-	if(game.input.keys.includes("6")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att6.anim).play(); }
-	if(game.input.keys.includes("7")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att7.anim).play(); }
-	if(game.input.keys.includes("8")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(run.anim).play(); }
+	if(game.input.keys.includes("1")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att1.anim).play().setDuration(0.3);boxplayer.set(new THREE.Vector3(-0.75,-0.5,-0.75 ),new THREE.Vector3(0.75,0.5,0.75 ))}
+	if(game.input.keys.includes("2")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att2.anim).play().setDuration(0.6);boxplayer.set(new THREE.Vector3(-1,-0.5,-1 ),new THREE.Vector3(1,0.5,1 )) }
+	if(game.input.keys.includes("3")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att3.anim).play().setDuration(0.6);boxplayer.set(new THREE.Vector3(-1.2,-0.5,-1.2 ),new THREE.Vector3(1.2,0.5,1.2 )) }
+	if(game.input.keys.includes("4")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att4.anim).play().setDuration(0.6);boxplayer.set(new THREE.Vector3(-2,-0.5,-0.5 ),new THREE.Vector3(2,0.5,0.5 )) }
+	if(game.input.keys.includes("5")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att5.anim).play().setDuration(0.6);boxplayer.set(new THREE.Vector3(-0.5,-0.5,-2),new THREE.Vector3(0.5,0.5,2 )) }
+	if(game.input.keys.includes("6")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att6.anim).play().setDuration(0.6);boxplayer.set(new THREE.Vector3(-0.5,-0.5,-0.5 ),new THREE.Vector3(4,0.5,0.5 ))}
+	if(game.input.keys.includes("7")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(att7.anim).play().setDuration(0.6);boxplayer.set(new THREE.Vector3(-0.5,-0.5,-0.5 ),new THREE.Vector3(0.5,0.5,4 )) }
+	if(game.input.keys.includes("8")){PlayerMixer2.stopAllAction();PlayerMixer2.clipAction(run.anim).play().setDuration(0.6);boxplayer.set(new THREE.Vector3(-0.5,-0.5,-0.5 ),new THREE.Vector3(0.5,0.5,0.5 )) }
 
 
 					}
@@ -547,7 +553,8 @@ draw(context){
 		
 		{}
 
-		
+
+
 
 		function LoadCubes()
 		{
@@ -568,10 +575,12 @@ draw(context){
 		//   console.log(Object.getOwnPropertyNames(carrot),Object.values(carrot),carrot.id,carrot.name);
 		  
 
+
+
 		carrot.scale.set(100,100,100);
 		  
           carrot.position.x = 0 ;
-          carrot.position.y = 20 ;
+          carrot.position.y = 0.2 ;
           carrot.position.z = 0 ;
 
 		  carrot.rotation.y=110;
@@ -581,18 +590,20 @@ draw(context){
 
 		 boxplayer.set(new THREE.Vector3(),new THREE.Vector3());
 
-		 const geometry = new THREE.BoxGeometry( 300, 300, 300 );
+		 const skillgeometry = new THREE.BoxGeometry( 1, 1, 1 );
 		const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
-		meshplayer = new THREE.Mesh( geometry, material );
+
+		meshplayer = new THREE.Mesh( skillgeometry, material );
 
 
 		meshplayer.position.set(carrot.position.x,carrot.position.y,carrot.position.z);
 
+		boxplayer.setFromObject(meshplayer);
+
 		carrot.add(meshplayer);
 
-		 boxplayer.setFromObject(meshplayer);
-
-		//  carrot.children[2].geometry.boundingBox.copy(meshplayer.geometry.boundingBox).applyMatrix4(meshplayer.matrixWorld);
+		 
+		 carrot.children[2].geometry.boundingBox.copy(boxplayer).applyMatrix4(meshplayer.matrixWorld);
 
 		 
 		 carrot.add(goal);
@@ -658,49 +669,9 @@ draw(context){
 
 
 
-
-
-			var loader = new GLTFLoader();
-				loader.load( '../Assets/Rabbit/char2.glb', function ( gltf )
-
-			{
-			
-				{
-          build = gltf.scene;
-		  build.name="build";
-
-		
-		//   console.log(gltf);
- 
-		  build.scale.set(100,100,100);
-		  
-          build.position.x = 0 ;
-          build.position.y = 20 ;
-          build.position.z = 0 ;
-	
-
-            let random = gltf.animations[0]; 
-			let random2 = gltf.animations[1]; 
-			let random3 = gltf.animations[9]; 
-			
-
-            let PlayerMixer = new THREE.AnimationMixer(build);
-
-
-            //  PlayerMixer.clipAction(random3).play();
-
-              mixers.push(PlayerMixer);
-
-					      scene.add(build);
-						  objectList.push(build);
-				};
-
-			});	
-
-
 				
 			var loader = new GLTFLoader();
-				loader.load( '../Assets/Rabbit/archery_target.glb', function ( gltf )
+				loader.load( '../Assets/Rabbit/char.glb', function ( gltf )
 				{
 
            ballon = gltf.scene;
@@ -709,7 +680,7 @@ draw(context){
 		  ballon.name="ballon";
 
           ballon.position.x = 0 ;
-          ballon.position.y = 0 ;
+          ballon.position.y = 50 ;
           ballon.position.z = 0 ;
 
 		  ballon.scale.set(100,100,100);
@@ -966,7 +937,7 @@ this.curve=Math.random()*200+50;
 				if(this.pool<10){
 			
 
-			
+	
 
 	key = SkeletonUtils.clone( ballon);
 	key.position.x = Math.floor(Math.random()*-5000-1000);
@@ -980,22 +951,24 @@ this.curve=Math.random()*200+50;
 
 	keybox.set(new THREE.Vector3(),new THREE.Vector3());
 
-	const geometry = new THREE.BoxGeometry( 300, 300, 300 );
+	const geometry = new THREE.BoxGeometry( 100, 100, 100 );
 		const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
 		const mesh = new THREE.Mesh( geometry, material );
 
 		mesh.position.set(key.position.x,key.position.y,key.position.z);
 
+		keybox.setFromObject(mesh);
+
 		key.add(mesh);
 
-		keybox.setFromObject(mesh);
+		
 
 		// console.log(key)
 
-		// key.children[1].geometry.boundingBox.copy(mesh.geometry.boundingBox).applyMatrix4(mesh.matrixWorld);
+		key.children[2].geometry.boundingBox.copy(keybox).applyMatrix4(mesh.matrixWorld);
 
 		
-		console.log(key)
+		// console.log(key.children[2].geometry.boundingBox.min.x,key.children[2].geometry.boundingBox.min.z,mesh.geometry.boundingBox.min.x,mesh.geometry.boundingBox.min.z)
 
 		// console.log( key.children[1].geometry.boundingBox,  keybox)
 
@@ -1021,7 +994,7 @@ this.curve=Math.random()*200+50;
 
 		ballons.push(key);
 		scene.add(key);
-		objectList.push(key);
+
 
 		// console.log(collisionpool)
 	
